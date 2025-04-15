@@ -1,0 +1,18 @@
+.footer {
+    text-align: center;
+    font-size: 1.2rem; /* Increase font size */
+    margin-top: 30px; /* Điều chỉnh giá trị này để cách footer xa hơn */
+}
+.content-container {
+    margin-bottom: 50px; /* Đảm bảo khoảng cách giữa nội dung và footer */
+}
+
+
+.footer-item__title {
+    font-size: 1.5rem; /* Increase title font size */
+}
+
+.footer-item p,
+.footer-item a {
+    font-size: 1.2rem; /* Increase paragraph and link font size */
+}
