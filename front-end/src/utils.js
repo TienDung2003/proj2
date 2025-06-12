@@ -47,7 +47,7 @@ export const renderOptions = (arr) => {
 export const convertPrice = (price) => {
     try {
         const result = price?.toLocaleString().replaceAll(',', '.')
-        return `${result} VND`
+        return `${result}`
     } catch (error) {
         return null
     }
@@ -101,3 +101,23 @@ export const convertDataChart = (data, type) => {
         return []
     }
 }
+
+export const getTopSellingProducts = (orders, top = 5) => {
+    const productMap = {};
+
+    orders.forEach((order) => {
+        order.orderItems.forEach((item) => {
+            if (!productMap[item.name]) {
+                productMap[item.name] = 0;
+            }
+            productMap[item.name] += item.amount;
+        });
+    });
+
+    const result = Object.entries(productMap)
+        .map(([name, quantity]) => ({ name, value: quantity }))
+        .sort((a, b) => b.value - a.value)
+        .slice(0, top);
+
+    return result;
+};

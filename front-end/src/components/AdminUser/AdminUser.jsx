@@ -83,7 +83,7 @@ const AdminUser = () => {
                 avatar: res.data?.avatar,
             });
         }
-        setIsLoadingUpdate(false);
+
     };
 
     useEffect(() => {
@@ -94,6 +94,7 @@ const AdminUser = () => {
         if (rowSelected && isOpenDrawer) {
             setIsLoadingUpdate(true);
             fetchGetDetailsUser(rowSelected, user?.access_token);
+            setIsLoadingUpdate(false);
         }
     }, [rowSelected, isOpenDrawer]);
 
@@ -103,19 +104,19 @@ const AdminUser = () => {
 
     const {
         data: dataUpdated,
-        isLoading: isLoadingUpdated,
+        isPending: isLoadingUpdated,
         isSuccess: isSuccessUpdated,
         isError: isErrorUpdated,
     } = mutationUpdate;
     const {
         data: dataDeleted,
-        isLoading: isLoadingDeleted,
+        isPending: isLoadingDeleted,
         isSuccess: isSuccessDeleted,
         isError: isErrorDeleted,
     } = mutationDeleted;
     const {
         data: dataDeletedMany,
-        isLoading: isLoadingDeletedMany,
+        isPending: isLoadingDeletedMany,
         isSuccess: isSuccessDeletedMany,
         isError: isErrorDeletedMany,
     } = mutationDeletedMany;

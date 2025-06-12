@@ -81,6 +81,7 @@ export const updateUser = async (id, data, access_token) => {
             },
         }
     );
+    console.log('res', `${process.env.REACT_APP_API_URL} / user / update / ${id}`)
     return res.data;
 };
 

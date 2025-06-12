@@ -1,36 +1,83 @@
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-dotenv.config()
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
+dotenv.config();
 
-
-const authMiddleware = (req, res, next) => {
-    if (req.headers.token) {
-        const token = req.headers.token.split(' ')[1]; // Cấu trúc: Bearer fdfdf..... -> lấy token: fdfdf....
-    } else {
-        return res.status(400).json({ message: 'no token - middleware' });
+const authMiddleWare = (req, res, next) => {
+    const authHeader = req.header("Authorization");
+    if (!authHeader) {
+        return res.status(401).json({
+            message: "No token provided",
+            status: "ERROR",
+        });
     }
 
+    const token = authHeader.split(" ")[1];
+    if (!token) {
+        return res.status(401).json({
+            message: "Token format is invalid",
+            status: "ERROR",
+        });
+    }
 
-    // Kiểm tra token khả thi?
     jwt.verify(token, process.env.ACCESS_TOKEN, function (err, user) {
         if (err) {
-            return res.status(403).json({ message: 'authentication error - middleware' });
+            return res.status(404).json({
+                message: "The authentication",
+                status: "ERROR",
+                error: err.message,
+            });
         }
-
-        if (!user) {
-            return res.status(404).json({ message: 'no user found - middleware' });
-        }
-
-        // Sau khi xác thực token, kiểm tra quyền admin
-        const { payload } = user;
-        if (payload?.isAdmin) {
-            next(); // Nếu là admin, tiếp tục xử lý yêu cầu
+        if (user?.isAdmin) {
+            next();
         } else {
-            return res.status(403).json({ message: 'not admin - middleware' });
+            return res.status(404).json({
+                message: "The authentication",
+                status: "ERROR",
+                error: err.message,
+            });
         }
     });
-}
+};
+
+const authUserMiddleWare = (req, res, next) => {
+    const authHeader = req.header("Authorization");
+    if (!authHeader) {
+        return res.status(401).json({
+            message: "No token provided",
+            status: "ERROR",
+        });
+    }
+
+    const token = authHeader.split(" ")[1];
+    if (!token) {
+        return res.status(401).json({
+            message: "Token format is invalid",
+            status: "ERROR",
+        });
+    }
+
+    const userId = req.params.id;
+    jwt.verify(token, process.env.ACCESS_TOKEN, function (err, user) {
+        if (err) {
+            return res.status(404).json({
+                message: "The authentication",
+                status: "ERROR",
+                error: err.message,
+            });
+        }
+        if (user?.isAdmin || user?.id === userId) {
+            next();
+        } else {
+            return res.status(404).json({
+                message: "The authentication",
+                status: "ERROR",
+                error: err.message,
+            });
+        }
+    });
+};
 
 module.exports = {
-    authMiddleware
-}
+    authMiddleWare,
+    authUserMiddleWare,
+};

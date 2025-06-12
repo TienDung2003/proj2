@@ -1,18 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const productController = require('../controllers/ProductController');
-const { authMiddleware } = require('../middleware/authMiddleware');
+const ProductController = require("../controllers/ProductController");
+const { authMiddleWare } = require("../middleware/authMiddleware");
 
-
-
-
-router.post('/create', productController.createProduct);// Thêm middleware authe sau khi FE có xử lý token
-router.put('/update/:id', productController.updateProduct); // Thêm middleware authe sau khi FE có xử lý token
-router.get('/detail/:id', productController.getDetailedProduct);
-router.get('/detail/get-all', productController.getAllProduct);
-router.delete('/delete/:id', authMiddleware, productController.deleteProduct); // Thêm middleware authe sau khi FE có xử lý token
-router.delete('/delete-many', authMiddleware, productController.deleteManyProduct);
-
-
+router.post("/create", ProductController.createProduct);
+router.put("/update/:id", authMiddleWare, ProductController.updateProduct);
+router.get("/get-details/:id", ProductController.getDetailsProduct);
+router.delete("/delete/:id", authMiddleWare, ProductController.deleteProduct);
+router.get("/get-all", ProductController.getAllProduct);
+router.post("/delete-many", authMiddleWare, ProductController.deleteMany);
+router.get("/get-all-type", ProductController.getAllType);
 
 module.exports = router;

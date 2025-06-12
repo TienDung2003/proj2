@@ -2,7 +2,7 @@ const Product = require("../models/ProductModel");
 
 const createProduct = (newProduct) => {
     return new Promise(async (resolve, reject) => {
-        const { name, image, type, price, countInStock, rating, description } = newProduct;
+        const { name, image, type, price, countInStock, rating, description, discount } = newProduct;
         try {
             const checkProduct = await Product.findOne({
                 name: name
@@ -18,14 +18,13 @@ const createProduct = (newProduct) => {
 
             //Nếu chưa tồn tại -> tạo đối tượng mới
             const createdProduct = await Product.create({
-                name, image, type, price, countInStock, rating, description
+                name, image, type, price, countInStock, rating, description, discount
             })
 
             resolve({
                 status: 'OK',
                 message: 'SUCCESS',
                 data: createdProduct
-
             })
 
         } catch (error) {
@@ -76,8 +75,8 @@ const getDetailedProduct = (id) => {
             })
 
             if (product === null) {
-                reject({
-                    status: 'ERROR',
+                resolve({
+                    status: 'OK',
                     message: "Product not found"
                 });
             }
@@ -104,8 +103,16 @@ const getAllProduct = (page, limit, sortParams, filterParams) => {
         try {
             // Bỏ qua các sản phẩm đã hiển thị trước đó
             const skip = (page - 1) * limit;
-            let totalProductCount = await Product.countDocuments(); // Khai báo biến totalProductCount
-            const totalPages = Math.ceil(totalProductCount / limit);
+
+            //Xử lý filter:
+            let filter = {};
+            if (filterParams) {
+                for (let i = 0; i < filterParams.length; i += 2) { //do mảng filterParams sẽ có dạng: [name, test] -> filterParams[0]=name; filterParams[1]=test;
+                    let key = filterParams[i];
+                    let value = filterParams[i + 1].replace(/_/g, " "); //chuyển gạch dưới thành khoảng trắng  (đồ_ăn -> đồ ăn)
+                    filter[key] = { $regex: value, $options: 'i' }; //không phân biệt chữ hoa, chữ thường
+                }
+            }
 
             //Xử lý sort
             let sort = {};
@@ -115,31 +122,23 @@ const getAllProduct = (page, limit, sortParams, filterParams) => {
                 sort[field] = order === 'desc' ? -1 : 1; // 1 cho 'asc', -1 cho 'desc'
             }
 
-            //Xử lý filter:
-            let filter = {};
-            if (filterParams) {
-                for (let i = 0; i < filterParams.length; i += 2) { //do mảng filterParams sẽ có dạng: [name, test] -> filterParams[0]=name; filterParams[1]=test;
-                    let key = filterParams[i];
-                    let value = filterParams[i + 1].replace(/\s+/g, '');//bỏ khoảng trắng
-                    filter[key] = { $regex: value, $options: 'i' }; //không phân biệt chữ hoa, chữ thường
-                }
 
+            //Tính số lượng sản phẩm đạt yêu cầu trong cơ sở dữ liệu
+            let totalProductCount = await Product.countDocuments(filter); // Khai báo biến totalProductCount
 
-            }
-
-
+            //Số page dựa trên số lượng sản phẩm đã tìm được
+            const totalPages = Math.ceil(totalProductCount / limit);
 
             // Tìm toàn bộ sản phẩm cho trang hiện tại
             const allProduct = await Product.find(filter).skip(skip).limit(limit).sort(sort);
 
 
-
-
             // Nếu DB sản phẩm rỗng
             if (allProduct.length === 0) {
-                reject({
-                    status: 'ERROR',
-                    message: "No product found"
+                resolve({
+                    status: 'OK',
+                    message: "No product found",
+                    data: []
                 });
             }
 
@@ -156,6 +155,39 @@ const getAllProduct = (page, limit, sortParams, filterParams) => {
                     sortBy: field || "khong sort",
                     sortOrder: order || "khong sort"
                 }
+            });
+
+        } catch (error) {
+            reject({
+                status: 'ERROR',
+                message: error.message || 'An error occurred when getting product item from service'
+            });
+        }
+    });
+}
+
+const getAllType = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+
+            const allType = await Product.distinct('type')
+
+
+
+
+            // Nếu DB sản phẩm rỗng
+            if (allType.length === 0) {
+                reject({
+                    status: 'ERROR',
+                    message: "No product type found"
+                });
+            }
+
+            // Nếu có sản phẩm trong DB
+            resolve({
+                status: 'OK',
+                message: 'SUCCESS',
+                data: allType,
             });
 
         } catch (error) {
@@ -206,13 +238,13 @@ const deleteManyProduct = (ids) => {
             })
             resolve({
                 status: 'OK',
-                message: 'DELETE SUCCESSFULLY',
+                message: 'PRODUCTS DELETED SUCCESSFULLY',
             });
 
         } catch (error) {
             reject({
                 status: 'ERROR',
-                message: error.message || 'An error occurred when deleting product item from service'
+                message: error.message || 'An error occurred when deleting product items from service'
             });
         }
     });
@@ -224,6 +256,7 @@ module.exports = {
     createProduct,
     updateProduct,
     getDetailedProduct,
+    getAllType,
     getAllProduct,
     deleteProduct,
     deleteManyProduct

@@ -4,11 +4,10 @@ const mongoose = require('mongoose');
 
 const createProduct = async (req, res) => {
     try {
-        const { name, image, type, price, countInStock, rating, description } = req.body
-        console.log('check', "created")
+        const { name, image, type, price, countInStock, rating, description, discount } = req.body
 
         //Nếu thiếu input thì báo input lỗi
-        if (!name || !image || !type || !price || !countInStock || !rating || !description) {
+        if (!name || !image || !type || !price || !countInStock || !rating || !description || !discount) {
             return res.status(400).json({
                 status: 'ERROR',
                 message: 'The input is required'
@@ -50,7 +49,7 @@ const updateProduct = async (req, res) => {
     }
 }
 
-const getDetailedProduct = async (req, res) => {
+const getDetailsProduct = async (req, res) => {
     try {
         //Lấy productID từ req
         const productId = req.params.id;
@@ -77,7 +76,13 @@ const getAllProduct = async (req, res) => {
     try {
         // Lấy chỉ số page hiện tại từ query hoặc sử dụng giá trị mặc định
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 7;
+        let limit = parseInt(req.query.limit);
+
+        if (limit === 0) {
+            limit = Infinity;
+        } else if (!limit) {
+            limit = 12;
+        }
 
         // Lấy sort từ query
         const sortParams = req.query.sort;
@@ -87,6 +92,19 @@ const getAllProduct = async (req, res) => {
 
         // Service lấy dữ liệu toàn bộ sản phẩm trong trang
         const response = await ProductService.getAllProduct(page, limit, sortParams, filterParams);
+
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(404).json({
+            status: 'ERROR',
+            message: error.message || 'An unexpected error occurred while getting all product'
+        });
+    }
+}
+
+const getAllType = async (req, res) => {
+    try {
+        const response = await ProductService.getAllType();
 
         return res.status(200).json(response);
     } catch (error) {
@@ -119,14 +137,14 @@ const deleteProduct = async (req, res) => {
     }
 }
 
-const deleteManyProduct = async (req, res) => {
+const deleteMany = async (req, res) => {
     try {
-        const ids = req.body;
+        const ids = req.body.ids;
 
         if (!ids || ids.length === 0) {
             return res.status(400).json({
                 status: 'ERROR',
-                message: 'ProductIds is required'
+                message: 'ProductIds are required'
             })
         }
 
@@ -136,7 +154,7 @@ const deleteManyProduct = async (req, res) => {
     } catch (error) {
         return res.status(500).json({
             status: 'ERROR',
-            message: error.message || 'An unexpected error occurred while deleting product'
+            message: error.message || 'An unexpected error occurred while deleting products'
         })
     }
 }
@@ -144,10 +162,9 @@ const deleteManyProduct = async (req, res) => {
 module.exports = {
     createProduct,
     updateProduct,
-    getDetailedProduct,
+    getDetailsProduct,
     getAllProduct,
+    getAllType,
     deleteProduct,
-    deleteManyProduct
+    deleteMany
 }
-
-

@@ -24,21 +24,41 @@ export const WrapperStyleTextSell = styled.span`
     line-height: 24px;
     color: rgb(120, 120, 120)
 `
+export const WrapperDiscription = styled.div`
+    max-height: 80px;
+  overflow: hidden;
+`
 
 export const WrapperPriceProduct = styled.div`
     background: rgb(250, 250, 250);
-    border-radius: 4px;
+    gap: 8px;
+    display: flex;
+    align-items: center;
 `
+export const WrapperOriginalPriceTextProduct = styled.div`
+font-size: 14px;
+    font-weight: 400;
+    line-height: 21px;
+    color: rgb(128, 128, 137);
+    `
+export const WrapperCurrentPriceTextProduct = styled.div`
 
-export const WrapperPriceTextProduct = styled.h1`
-    font-size: 32px;
-    line-height: 40px;
-    margin-right: 8px;
-    font-weight: 500;
-    padding: 10px;
-    margin-top: 10px;
+    font-size: 24px;
+    line-height: 150%;
+   font-weight: bold;
+    font-weight: 600;
+   
+    color: rgb(255, 66, 78);
 `
-
+export const WrapperDiscountTextProduct = styled.div`
+font-weight: 400;
+    font-size: 12px;
+    line-height: 150%;
+    padding: 0px 4px;
+    background: rgb(245, 245, 250);
+    border-radius: 8px;
+    
+`
 export const WrapperAddressProduct = styled.div`
     span.address {
         text-decoration: underline;
@@ -54,6 +74,9 @@ export const WrapperAddressProduct = styled.div`
         font-size: 16px;
         line-height: 24px;
         font-weight: 500;
+        &:hover {
+    color: darkblue;
+  }
     }
 `
 
@@ -76,3 +99,14 @@ export const WrapperInputNumber = styled(InputNumber)`
         }
     };
 `
+
+export const ChangeAddress = styled.span`
+  color: blue;
+ 
+  cursor: pointer;
+  padding: 5px;
+
+  &:hover {
+    color: red;
+  }
+`;

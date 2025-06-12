@@ -9,12 +9,13 @@ import {
 import DefaultComponent from "./components/DefaultComponent/DefaultComponent";
 import { routes } from "./routes";
 import { isJsonString } from "./utils";
-import jwt_decode from "jwt-decode";
+import { jwtDecode } from 'jwt-decode';
+
 import * as UserService from "./services/UserService";
 import { useDispatch, useSelector } from "react-redux";
 import { resetUser, updateUser } from "./redux/slices/userSlice";
 import Loading from "./components/LoadingComponent/LoadingComponent";
-import Footer from "./components/FooterComponent/FooterOne";
+import Footer from "./components/FooterComponent/Footer";
 
 function App() {
   const dispatch = useDispatch();
@@ -23,23 +24,27 @@ function App() {
   const isLoggedIn = !!(
     user?.access_token || localStorage.getItem("access_token")
   );
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
-    const { storageData, decoded } = handleDecoded();
-    if (decoded?.id) {
-      handleGetDetailsUser(decoded?.id, storageData);
-    }
-    setIsLoading(false);
+    const init = async () => {
+      setIsLoading(true);
+      const { storageData, decoded } = handleDecoded();
+      if (decoded?.id) {
+        await handleGetDetailsUser(decoded?.id, storageData);
+      }
+      setIsInitialized(true); // ✅ Mark đã khởi tạo user xong
+      setIsLoading(false);
+    };
+    init();
   }, []);
-
   const handleDecoded = () => {
     let storageData =
       user?.access_token || localStorage.getItem("access_token");
     let decoded = {};
     if (storageData && isJsonString(storageData) && !user?.access_token) {
       storageData = JSON.parse(storageData);
-      decoded = jwt_decode(storageData);
+      decoded = jwtDecode(storageData);
     }
     return { decoded, storageData };
   };
@@ -50,7 +55,7 @@ function App() {
       const { decoded } = handleDecoded();
       let storageRefreshToken = localStorage.getItem("refresh_token");
       const refreshToken = JSON.parse(storageRefreshToken);
-      const decodedRefreshToken = jwt_decode(refreshToken);
+      const decodedRefreshToken = jwtDecode(refreshToken);
       if (decoded?.exp < currentTime.getTime() / 1000) {
         if (decodedRefreshToken?.exp > currentTime.getTime() / 1000) {
           const data = await UserService.refreshToken(refreshToken);
@@ -80,7 +85,9 @@ function App() {
       })
     );
   };
-
+  if (!isInitialized) {
+    return <Loading isLoading />;
+  }
   return (
     <div style={{ height: "100vh", width: "100%" }}>
       <Loading isLoading={isLoading}>
@@ -101,7 +108,7 @@ function App() {
               }
 
               if (
-                route.path === "/system/admin" &&
+                route.path === "/system/admin" && isInitialized &&
                 !user.isAdmin
               ) {
                 return (
@@ -130,7 +137,7 @@ function App() {
                   element={
                     <Layout>
                       <Page />
-                      <Footer />
+                      {/* <Footer /> */}
                     </Layout>
                   }
                 />
@@ -139,6 +146,7 @@ function App() {
           </Routes>
         </Router>
       </Loading>
+      {/* <Footer /> */}
     </div>
   );
 }

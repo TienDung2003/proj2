@@ -1,0 +1,68 @@
+.price-popup-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.price-popup-icon {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.price-popup-content {
+    position: absolute;
+    top: 24px;
+    left: 110%;
+    width: 320px;
+    top: 0;
+    transform: "translateY(-20%)";
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 16px;
+    font-size: 14px;
+    z-index: 1000;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.price-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.price-popup-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.price-popup-note {
+    color: #888;
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.price-popup-close {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.price-popup-close:hover {
+    color: #000;
+}
+
+.text-line-through {
+
+    color: #000;
+}
+
+.text-green {
+    color: #2ecc71;
+    font-weight: bold;
+}

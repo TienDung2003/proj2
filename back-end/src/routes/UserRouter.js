@@ -1,13 +1,26 @@
-const express = require('express');
-const routes = express.Router();
-const userController = require('../controllers/UserController');
-const { authMiddleware } = require('../middleware/authMiddleware');
-routes.post('/sign-up', userController.createUser);
-routes.post('/sign-in', userController.loginUser);
-routes.put('/update-user/:id', userController.updateUser);
-routes.delete('/delete-user/:id', authMiddleware, userController.deleteUser);
-routes.get('/user-detail/:id', authMiddleware, userController.getUserDetail);
-routes.get('/get-all', authMiddleware, userController.getAllUser);
-routes.post('/refresh-token', userController.refreshToken);
-routes.delete('/delete-many', authMiddleware, userController.deleteManyUser);
-module.exports = routes;
+const express = require("express");
+const router = express.Router();
+const userController = require("../controllers/UserController");
+const {
+    authMiddleWare,
+    authUserMiddleWare,
+} = require("../middleware/authMiddleware");
+
+router.post("/sign-up", userController.createUser);
+router.post("/sign-in", userController.loginUser);
+router.put("/update/:id",
+    authUserMiddleWare,
+    userController.updateUser);
+router.get(
+    "/get-details/:id",
+    authUserMiddleWare,
+    userController.getDetailsUser
+);
+router.post("/refresh-token", userController.refreshToken);
+router.post("/log-out", userController.logoutUser);
+router.get("/get-all", authMiddleWare, userController.getAllUser);
+router.delete("/delete-user/:id", authMiddleWare, userController.deleteUser);
+router.post("/delete-many", authMiddleWare, userController.deleteMany);
+router.post("/login-with-google", userController.loginWithGoogle);
+
+module.exports = router;

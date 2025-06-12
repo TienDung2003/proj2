@@ -3,7 +3,7 @@ import DetailsOrderPage from "../pages/DetailsOrderPage/DetailsOrderPage";
 import HomePage from "../pages/HomePage/HomePage";
 import MyOrderPage from "../pages/MyOrder/MyOrder";
 import NotFoundPage from "../pages/NotFoundPage/NotFoundPage";
-import OrderPage from "../pages/OrderPage/OrderPage";
+import OrderPage from "../pages/OrderPage/OrderPage"
 import OrderSucess from "../pages/OrderSuccess/OrderSuccess";
 import PaymentPage from "../pages/PaymentPage/PaymentPage";
 import ProductDetailsPage from "../pages/ProductDetailsPage/ProductDetailsPage";

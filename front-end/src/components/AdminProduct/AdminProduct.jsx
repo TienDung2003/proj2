@@ -146,22 +146,22 @@ const AdminProduct = () => {
         return res;
     };
 
-    const { data, isLoading, isSuccess, isError } = mutation;
+    const { data, isPending, isSuccess, isError } = mutation;
     const {
         data: dataUpdated,
-        isLoading: isLoadingUpdated,
+        isPending: isLoadingUpdated,
         isSuccess: isSuccessUpdated,
         isError: isErrorUpdated,
     } = mutationUpdate;
     const {
         data: dataDeleted,
-        isLoading: isLoadingDeleted,
+        isPending: isLoadingDeleted,
         isSuccess: isSuccessDelected,
         isError: isErrorDeleted,
     } = mutationDeleted;
     const {
         data: dataDeletedMany,
-        isLoading: isLoadingDeletedMany,
+        isPending: isLoadingDeletedMany,
         isSuccess: isSuccessDelectedMany,
         isError: isErrorDeletedMany,
     } = mutationDeletedMany;
@@ -559,7 +559,7 @@ const AdminProduct = () => {
                 onCancel={handleCancel}
                 footer={null}
             >
-                <Loading isLoading={isLoading}>
+                <Loading isLoading={isPending}>
                     <Form
                         name="basic"
                         labelCol={{ span: 6 }}

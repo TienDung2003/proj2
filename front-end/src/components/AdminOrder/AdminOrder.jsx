@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { orderContant } from "../../contant";
 import PieChartComponent from "./PieChart";
 import Highlighter from "react-highlight-words";
-
+import TopSellingChartComponent from "./TopSellingChartComponent";
 const OrderAdmin = () => {
     const user = useSelector((state) => state?.user);
     const [searchText, setSearchText] = useState("");
@@ -165,24 +165,45 @@ const OrderAdmin = () => {
             },
         },
         {
-            title: "Shipped",
-            dataIndex: "isDelivered",
+            title: "Order Time",
+            dataIndex: "orderAt",
+            sorter: (a, b) => new Date(a.orderAt) - new Date(b.orderAt),
             filters: [
                 {
-                    text: "TRUE",
-                    value: "TRUE",
+                    text: "Hôm nay",
+                    value: "today",
                 },
                 {
-                    text: "FALSE",
-                    value: "FALSE",
+                    text: "7 ngày gần nhất",
+                    value: "last7days",
+                },
+                {
+                    text: "30 ngày gần nhất",
+                    value: "last30days",
                 },
             ],
             onFilter: (value, record) => {
-                if (value === "TRUE") {
-                    return record.isDelivered === "TRUE";
+                const orderDate = new Date(record.orderAt);
+                const now = new Date();
+
+                if (value === "today") {
+                    return (
+                        orderDate.toDateString() === now.toDateString()
+                    );
+                } else if (value === "last7days") {
+                    const sevenDaysAgo = new Date();
+                    sevenDaysAgo.setDate(now.getDate() - 7);
+                    return orderDate >= sevenDaysAgo && orderDate <= now;
+                } else if (value === "last30days") {
+                    const thirtyDaysAgo = new Date();
+                    thirtyDaysAgo.setDate(now.getDate() - 30);
+                    return orderDate >= thirtyDaysAgo && orderDate <= now;
                 }
-                return record.isDelivered === "FALSE";
+
+                return true;
             },
+            render: (text) =>
+                text ? new Date(text).toLocaleString() : "N/A",
         },
         {
             title: "Payment method",
@@ -226,17 +247,24 @@ const OrderAdmin = () => {
                 address: order?.shippingAddress?.address,
                 paymentMethod: orderContant.payment[order?.paymentMethod],
                 isPaid: order?.isPaid ? "TRUE" : "FALSE",
-                isDelivered: order?.isDelivered ? "TRUE" : "FALSE",
+                // isDelivered: order?.isDelivered ? "TRUE" : "FALSE",
                 totalPrice: convertPrice(order?.totalPrice),
+                orderAt: order?.OrderAt || order?.createdAt,
             };
         });
 
     return (
         <div>
             <WrapperHeader>Quản lý đơn hàng</WrapperHeader>
-            <div style={{ height: 200, width: 200 }}>
-                <PieChartComponent data={orders?.data} />
+            <div style={{ display: "flex", gap: 30 }}>
+                <div style={{ height: 200, width: 200 }}>
+                    <PieChartComponent data={orders?.data} />
+                </div>
+                <div style={{ flex: 1 }}>
+                    <TopSellingChartComponent data={orders?.data} />
+                </div>
             </div>
+
             <div style={{ marginTop: "20px" }}>
                 <TableComponent
                     enableRowSelection={false}
